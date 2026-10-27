@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Writing desk | Bhupender Gupta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="view-dashboard">
+<header class="topbar">
+  <a class="brand" href="stories.html"><img src="assets/logo.png" alt="Bhupender Gupta" width="186" height="40"><span>Writing desk</span></a>
+  <nav>
+    <a href="stories.html">My stories</a>
+    <a href="help.html">Help</a>
+    <a href="https://nikitawadhawan-cmyk.github.io/bhupendergupta-design-preview/" target="_blank">View website</a>
+    <a href="password.html">Change password</a>
+    <a href="index.html?logout=1">Log out</a>
+  </nav>
+</header>
+<main class="page"><div class="dash-head">
+  <div>
+    <h1>My stories</h1>
+    <p class="hint">0 stories on the website</p>
+  </div>
+  <a class="btn btn-primary btn-big" href="editor.html">✍&nbsp; Write a new story</a>
+</div>
+
+
+<label class="search">
+  <span>Find a story</span>
+  <input type="search" id="find" placeholder="Type a word from the title, e.g. Ranthambore" autocomplete="off">
+</label>
+
+<ul class="story-list" id="story-list">
+  </ul>
+<p class="hint" id="no-match" hidden>No story matches that word.</p>
+
+<script>
+const find = document.getElementById('find');
+find.addEventListener('input', () => {
+  const q = find.value.trim().toLowerCase();
+  let shown = 0;
+  document.querySelectorAll('#story-list li').forEach((li) => {
+    const match = !q || li.dataset.search.includes(q);
+    li.hidden = !match;
+    shown += match;
+  });
+  document.getElementById('no-match').hidden = shown > 0;
+});
+</script>
+</main>
+<script src="data.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>

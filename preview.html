@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Preview | Bhupender Gupta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Caveat:wght@500&family=Montserrat:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<link rel="stylesheet" href="assets/design-2.css">
+</head>
+<body class="design-2">
+<!-- Writing-desk demo: shows a story the way the website would, from this browser's demo data. -->
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" id="home-link"><img src="assets/logo.png" alt="Bhupender Gupta" width="248" height="53"></a>
+  </div>
+</header>
+<main id="main"><p class="wrap section">Loading the preview…</p></main>
+<script src="data.js"></script>
+<script>
+(function () {
+  const D = window.DEMO_DATA;
+  document.getElementById('home-link').href = D.siteUrl;
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let st = {};
+  try { st = JSON.parse(localStorage.getItem('bgDemo-v1')) || {}; } catch {}
+  const destinations = [...D.destinations, ...(st.destinations || [])];
+  const trips = [...D.trips, ...(st.trips || [])];
+  const params = new URLSearchParams(location.search);
+
+  let post;
+  if (params.has('draft')) {
+    try {
+      const p = JSON.parse(localStorage.getItem('bgDemo-preview'));
+      post = { ...p, blocks: p.body, draft: true };
+    } catch {}
+  } else {
+    const id = Number(params.get('id'));
+    post = (st.posts || {})[id] || D.posts.find((p) => p.id === id);
+  }
+
+  function loadUploads() {
+    return new Promise((resolve) => {
+      try {
+        const req = indexedDB.open('bgDemo', 1);
+        req.onupgradeneeded = () => req.result.createObjectStore('photos', { keyPath: 'id' });
+        req.onerror = () => resolve();
+        req.onsuccess = () => {
+          const get = req.result.transaction('photos').objectStore('photos').getAll();
+          get.onsuccess = () => {
+            for (const r of get.result || []) {
+              const url = URL.createObjectURL(r.blob);
+              D.photos[r.id] = { thumb: url, large: url, width: r.width, height: r.height };
+            }
+            resolve();
+          };
+          get.onerror = () => resolve();
+        };
+      } catch { resolve(); }
+    });
+  }
+
+  function figure(p, caption, cls) {
+    const ph = D.photos[p];
+    if (!ph) return '';
+    const style = cls === 'photo' ? ` style="max-width:min(${ph.width}px, 1100px)"` : '';
+    return `<figure class="${cls}"${style}><img src="${esc(ph.large)}" width="${ph.width}" height="${ph.height}" alt="${esc(caption)}">`
+      + (caption ? `<figcaption>${esc(caption)}</figcaption>` : '') + '</figure>';
+  }
+
+  function body(blocks) {
+    let html = '';
+    const small = (b) => b && b.type === 'photo' && D.photos[b.id] && D.photos[b.id].width <= 700;
+    for (let i = 0; i < blocks.length; i++) {
+      const b = blocks[i];
+      if (b.type === 'text') html += `<div class="prose">${b.html}</div>`;
+      else if (small(b) && small(blocks[i + 1])) {
+        const n = blocks[++i];
+        html += `<div class="photo-pair">${figure(b.id, b.caption, 'pair-item')}${figure(n.id, n.caption, 'pair-item')}</div>`;
+      } else if (b.type === 'photo') html += figure(b.id, b.caption, 'photo');
+      else if (b.type === 'gallery') html += `<div class="gallery">${b.items.map((it) => figure(it.id, it.caption, 'gallery-item')).join('')}</div>`;
+    }
+    return html;
+  }
+
+  loadUploads().then(() => {
+    const main = document.getElementById('main');
+    if (!post) {
+      main.innerHTML = '<section class="wrap section page-top narrow"><h1>Story not found</h1><p class="lead">Close this tab to go back to the writing desk.</p></section>';
+      return;
+    }
+    const blocks = post.blocks || [];
+    const dest = destinations.find((d) => d.id === Number(post.destination_id));
+    const newDest = (post.new_destination || '').trim();
+    const trip = trips.find((t) => t.id === Number(post.trip_id));
+    const tripName = (post.new_trip || '').trim() || trip?.name;
+    const destName = newDest || dest?.name || '';
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(post.published_on || '') ? post.published_on : new Date().toISOString().slice(0, 10);
+    const nice = new Date(date + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const firstIds = blocks.slice(0, 2).flatMap((b) => (b.type === 'photo' ? [b.id] : b.type === 'gallery' ? b.items.map((i) => i.id) : []));
+    const coverId = Number(post.cover_photo_id) || blocks.flatMap((b) => (b.type === 'photo' ? [b.id] : [])).find(Boolean);
+    const cover = coverId && !firstIds.includes(coverId) ? D.photos[coverId] : null;
+    document.title = (post.title || 'Untitled story') + ' | Bhupender Gupta';
+    main.innerHTML = `
+      <div class="preview-banner">${post.draft || post.status !== 'published'
+        ? 'This is a <strong>preview</strong>. Nothing on this page reaches the website until you press Publish or Save changes. Close this tab to go back to writing.'
+        : 'Demo: this is how the published story looks on the website. Close this tab to go back to the writing desk.'}</div>
+      <article class="story">
+        <header class="story-head wrap">
+          <nav class="kicker breadcrumb" aria-label="Breadcrumb"><span>Home</span> <span aria-hidden="true">›</span> <span>${esc(destName)}</span>
+            ${tripName && tripName !== destName ? `<span aria-hidden="true">›</span> <span>${esc(tripName)}</span>` : ''}</nav>
+          <h1>${esc(post.title || 'Untitled story')}</h1>
+          <p class="story-meta">By Bhupender Gupta · ${esc(nice)}</p>
+        </header>
+        ${cover ? `<figure class="story-cover" style="max-width: calc(${Math.min(cover.width, 1200)}px + 48px)"><img src="${esc(cover.large)}" alt=""></figure>` : ''}
+        <div class="story-body">${body(blocks)}</div>
+      </article>`;
+  });
+})();
+</script>
+</body>
+</html>

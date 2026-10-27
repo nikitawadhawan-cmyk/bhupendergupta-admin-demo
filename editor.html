@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Writing desk | Bhupender Gupta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="view-editor">
+<header class="topbar">
+  <a class="brand" href="stories.html"><img src="assets/logo.png" alt="Bhupender Gupta" width="186" height="40"><span>Writing desk</span></a>
+  <nav>
+    <a href="stories.html">My stories</a>
+    <a href="help.html">Help</a>
+    <a href="https://nikitawadhawan-cmyk.github.io/bhupendergupta-design-preview/" target="_blank">View website</a>
+    <a href="password.html">Change password</a>
+    <a href="index.html?logout=1">Log out</a>
+  </nav>
+</header>
+<main class="page"><div class="editor-head">
+  <a class="back" href="stories.html">← Back to my stories</a>
+  <h1>Write a new story</h1>
+</div>
+
+<section class="card step">
+  <h2><span class="num">1</span> Title of the story</h2>
+  <input id="title" class="input-title" placeholder="For example: Tigers of Ranthambore – Day 1" autocomplete="off">
+</section>
+
+<section class="card step">
+  <h2><span class="num">2</span> Where was this?</h2>
+  <div class="grid-2">
+    <label>Country
+      <select id="destination"></select>
+    </label>
+    <label id="new-destination-wrap" hidden>Name of the new country
+      <input id="new-destination" placeholder="For example: Sri Lanka" autocomplete="off">
+    </label>
+    <label>Trip
+      <select id="trip"></select>
+    </label>
+    <label id="new-trip-wrap" hidden>Name of the new trip
+      <input id="new-trip" placeholder="For example: Kaziranga" autocomplete="off">
+    </label>
+  </div>
+  <fieldset class="choice">
+    <legend>Should this story also appear on the <strong>Wild Life Safaris</strong> page?</legend>
+    <label><input type="radio" name="wildlife" value="1"> Yes</label>
+    <label><input type="radio" name="wildlife" value="0" checked> No</label>
+  </fieldset>
+</section>
+
+<section class="card step">
+  <h2><span class="num">3</span> Write your story</h2>
+  <p class="hint">Type your story in the white box. To put photos in, click in the text where they should go, then press <strong>Add photos</strong>.</p>
+  <div id="blocks" class="blocks"></div>
+  <div class="add-bar">
+    <button type="button" class="btn btn-secondary btn-big" id="add-photos">📷&nbsp; Add photos</button>
+    <button type="button" class="btn btn-secondary btn-big" id="add-text">✎&nbsp; Add more text</button>
+    <input type="file" id="file" accept="image/jpeg,image/png,image/webp" multiple hidden>
+  </div>
+  <p class="hint drop-hint">You can also drag photos from a folder and drop them here.</p>
+</section>
+
+<section class="card step">
+  <h2><span class="num">4</span> Cover photo</h2>
+  <p class="hint">The cover photo is shown on the home page. Click a photo to choose it.</p>
+  <div id="cover-choices" class="cover-choices"></div>
+</section>
+
+<section class="card step">
+  <h2><span class="num">5</span> Date and summary <span class="optional">(you can skip this)</span></h2>
+  <div class="grid-2">
+    <label>Date shown on the story
+      <input type="date" id="date">
+    </label>
+  </div>
+  <label>Short summary
+    <span class="hint">If you leave this empty, the first lines of the story are used.</span>
+    <textarea id="summary" rows="3"></textarea>
+  </label>
+
+  <details class="advanced" id="seo-box">
+    <summary>How it looks on Google <span class="optional">(optional)</span></summary>
+    <p class="hint">This is filled in automatically from the title and summary. Change it only if you want Google to show different words.</p>
+    <div class="serp" aria-label="Google preview">
+      <div class="serp-url" id="serp-url"></div>
+      <div class="serp-title" id="serp-title"></div>
+      <div class="serp-desc" id="serp-desc"></div>
+    </div>
+    <label>Title on Google <span class="hint" id="seo-title-count"></span>
+      <input id="seo-title" maxlength="90" autocomplete="off">
+    </label>
+    <label>Description on Google <span class="hint" id="seo-description-count"></span>
+      <textarea id="seo-description" rows="3" maxlength="220"></textarea>
+    </label>
+  </details>
+</section>
+
+
+<div class="savebar">
+  <div class="savebar-inner">
+    <span id="status" class="status" aria-live="polite"></span>
+    <div class="actions">
+      <button type="button" class="btn btn-secondary" id="preview">Preview</button>
+      <button type="button" class="btn btn-secondary" id="save-draft"></button>
+      <button type="button" class="btn btn-primary" id="publish"></button>
+    </div>
+  </div>
+</div>
+
+<dialog id="message" class="message">
+  <h2 id="message-title"></h2>
+  <p id="message-text"></p>
+  <div class="actions" id="message-actions"></div>
+</dialog>
+
+<script id="editor-data" type="application/json">{"csrf":"482c440d3b80e3c8f4b861d4dfd9302b","post":null,"photos":{},"destinations":[{"id":1,"name":"USA"},{"id":2,"name":"Tanzania"},{"id":3,"name":"Canada"},{"id":4,"name":"Kenya"},{"id":5,"name":"India"},{"id":6,"name":"French Polynesia"},{"id":7,"name":"New Zealand"}],"trips":[{"id":1,"destination_id":1,"name":"East Coast"},{"id":3,"destination_id":2,"name":"Tanzania Safari"},{"id":4,"destination_id":3,"name":"Canada"},{"id":5,"destination_id":4,"name":"Masai Mara"},{"id":6,"destination_id":5,"name":"Leh Ladakh"},{"id":16,"destination_id":6,"name":"French Polynesia"},{"id":17,"destination_id":7,"name":"New Zealand"},{"id":2,"destination_id":1,"name":"West Coast"},{"id":7,"destination_id":5,"name":"Jawai"},{"id":8,"destination_id":5,"name":"Ranthambore"},{"id":9,"destination_id":5,"name":"Jhalana"},{"id":10,"destination_id":5,"name":"Manas National Park"},{"id":11,"destination_id":5,"name":"Bhigwan"},{"id":12,"destination_id":5,"name":"Kashmir"},{"id":13,"destination_id":5,"name":"Jim Corbett"},{"id":14,"destination_id":5,"name":"Spiti Valley"},{"id":15,"destination_id":5,"name":"Tadoba"}],"today":"2026-10-27"}</script>
+
+</main>
+<script src="data.js"></script>
+<script src="demo.js"></script>
+</body>
+</html>
